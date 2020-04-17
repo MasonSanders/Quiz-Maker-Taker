@@ -13,34 +13,27 @@ public class ScoreBasedQuiz implements Quiz, ActionListener, Serializable {
 	
 	//maker components
 	//ArrayList<Panel> qPanels = new ArrayList<Panel>();
-	boolean framesUpdated = true;
 	Panel quizPanel = new Panel();
-	JButton removeQuestionBtn = new JButton("-");
 	JButton addSnglAnsBtn = new JButton("Add Single Answer Question");
 	JButton addMltiAnsBtn = new JButton("Add Multi Answer Question");
 	
+	//constructor
 	public ScoreBasedQuiz() {
 		this.name = "";
-		this.removeQuestionBtn.addActionListener(this);
-		this.addSnglAnsBtn.addActionListener(this);
 		this.addMltiAnsBtn.addActionListener(this);
+		this.addSnglAnsBtn.addActionListener(this);
 		this.createMakerPanel();
 	}
+	
 	//setName method
 	public void setName(String name) {
 		this.name = name;
 	}
+	
+	//getName method
 	public String getName() {
 		return this.name;
 	}
-	
-	
-	/* might not use this
-	public Question getQuestion(int index) {
-		return this.questions.get(index);
-    }
-	*/
-	
 	
 	//addQuestion method
 	//adds a question after another question
@@ -57,30 +50,80 @@ public class ScoreBasedQuiz implements Quiz, ActionListener, Serializable {
 		this.questions.remove(index);
 	}//end removeQuestion
 	
+	//createMakerPanel method
 	public void createMakerPanel() {
+		//try to clean the pane before it needs updated
 		this.quizPanel.removeAll();
-		this.quizPanel.setLayout(new BoxLayout(this.quizPanel, BoxLayout.Y_AXIS));
-		for (int i = 0; i < this.questions.size(); i++) {
+		this.quizPanel.revalidate();
+		this.quizPanel.setLayout(new GridBagLayout());
+		GridBagConstraints constr = new GridBagConstraints();
+		
+		Panel panePnl = new Panel();
+		panePnl.setLayout(new BoxLayout(panePnl, BoxLayout.Y_AXIS));
+		
+		for(int i = 0; i < this.questions.size(); i++) {
 			Panel nestPanel = new Panel();
-			nestPanel.setLayout(new FlowLayout());
+			nestPanel.setLayout(new GridBagLayout());
 			
-			nestPanel.add(new JLabel(Integer.toString(i + 1)));
-			nestPanel.add(this.removeQuestionBtn);
-			nestPanel.add(this.questions.get(i).getMakerPanel());
-			this.quizPanel.add(nestPanel);
+			JLabel qNumLbl = new JLabel(Integer.toString(i + 1));
+			constr.fill = GridBagConstraints.HORIZONTAL;
+			constr.weightx = 0.0;
+			constr.gridx = 0;
+			constr.gridy = 0;
+			constr.gridwidth = 1;
+			constr.gridheight = 1;
+			nestPanel.add(qNumLbl, constr);
+			
+			JButton removeBtn = new JButton("-");
+			constr.fill = GridBagConstraints.HORIZONTAL;
+			constr.weightx = 0.0;
+			constr.gridx = 1;
+			constr.gridy = 0;
+			constr.insets = new Insets(0, 5, 0, 5);
+			constr.gridwidth = 1;
+			constr.gridheight = 1;
+			nestPanel.add(removeBtn, constr);
+			
+			Panel questionPnl = this.questions.get(i).getMakerPanel();
+			constr.fill = GridBagConstraints.HORIZONTAL;
+			constr.weightx = 1.0;
+			constr.gridx = 2;
+			constr.gridy = 0;
+			constr.gridwidth = 4;
+			constr.gridheight = 2;
+			nestPanel.add(questionPnl, constr);
+			
+			panePnl.add(nestPanel);
 		}
-		this.quizPanel.add(this.addSnglAnsBtn);
-		this.quizPanel.add(this.addMltiAnsBtn);
-		this.framesUpdated = true;
+		Panel bottom = new Panel();
+		bottom.setLayout(new GridBagLayout());
 		
+		constr.fill = GridBagConstraints.HORIZONTAL;
+		constr.weightx = 0.0;
+		constr.gridx = 0;
+		constr.gridy = 0;
+		constr.gridwidth = 1;
+		bottom.add(this.addSnglAnsBtn, constr);
 		
-	}
-	public Panel getMakerPanel() {
-		return this.quizPanel;
+		constr.fill = GridBagConstraints.HORIZONTAL;
+		constr.weightx = 0.0;
+		constr.gridx = 1;
+		constr.gridy = 0;
+		constr.gridwidth = 1;
+		bottom.add(this.addMltiAnsBtn, constr);
+		
+		panePnl.add(bottom);
+		
+		JScrollPane pane = new JScrollPane(panePnl);
+		
+		constr.fill = GridBagConstraints.BOTH;
+		constr.gridx = 0;
+		constr.gridy = 0;
+		this.quizPanel.add(pane);
 	}
 	
-	public boolean getUpdated() {
-		return this.framesUpdated;
+	public Panel getMakerPanel() {
+		return this.quizPanel;
 	}
 	
 	public void actionPerformed(ActionEvent e) {
@@ -98,10 +141,8 @@ public class ScoreBasedQuiz implements Quiz, ActionListener, Serializable {
 		}
 		if (eventButton.getText().equals("Add Single Answer Question")) {
 			this.addQuestion("Single Answer");
-			this.framesUpdated = false;
 			this.createMakerPanel();
 			this.quizPanel.revalidate();
 		}
 	}
-	
 }

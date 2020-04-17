@@ -6,7 +6,7 @@ import java.awt.event.*;
 import java.util.*;
 import java.io.*;
 
-public class Window extends JFrame implements ActionListener {
+public class Window extends JFrame implements ActionListener, AdjustmentListener {
 	Screens previousScreen = Screens.MAIN_MENU;
 	//ArrayLists of different types of components
 	Container surface;
@@ -32,32 +32,9 @@ public class Window extends JFrame implements ActionListener {
 		this.surface = this.getContentPane();
 		this.pack();
 		this.setVisible(true);
-		//create the components used in the main menu and call the main menu
-		//this.createBtnOptions();
+		
 		this.mainMenu();
 	}//end constructor
-	
-	
-	//createBtnOptionsComponents method
-	/*
-	public void createBtnOptions() {
-		this.btnOptions.add(new JButton("Back"));
-		this.btnOptions.get(this.btnOptions.size() - 1).addActionListener(this);
-		
-		//button components for the main menu screen
-		this.btnOptions.add(new JButton("Make a Quiz"));
-		this.btnOptions.get(this.btnOptions.size() - 1).addActionListener(this);
-		this.btnOptions.add(new JButton("Take a Quiz"));
-		this.btnOptions.get(this.btnOptions.size() - 1).addActionListener(this);
-		
-		//button components for the maker type selection screen
-		this.btnOptions.add(new JButton("Score Based Quiz"));
-		this.btnOptions.get(this.btnOptions.size() - 1).addActionListener(this);
-		this.btnOptions.add(new JButton("Finite Results Quiz"));
-		this.btnOptions.get(this.btnOptions.size() - 1).addActionListener(this);
-		
-	}//end createMainMenuComponents
-	*/
 	
 	//mainMenu method
 	public void mainMenu() {
@@ -177,36 +154,54 @@ public class Window extends JFrame implements ActionListener {
 		this.btnOptions.removeAll(this.btnOptions);
 		this.textFields.removeAll(this.textFields);
 		this.surface.removeAll();
-		this.setSize(800, 600);
+		this.surface.repaint();
+		this.surface.validate();
 		
-		this.surface.setLayout(new FlowLayout());
-		
-		//create a secondary layer that the scrollpane will be able to hold
-		Panel content = new Panel();
-		content.setLayout(new GridLayout(2, 1));
-		
-		//top panel contains the quiz name and the back button
-		Panel top = new Panel();
-		top.setLayout(new FlowLayout());
+		this.surface.setLayout(new GridBagLayout());
+		GridBagConstraints constr = new GridBagConstraints();
 		
 		//back button
 		this.btnOptions.add(new JButton("Back"));
 		this.btnOptions.get(this.btnOptions.size() - 1).addActionListener(this);
-		top.add(this.btnOptions.get(this.btnOptions.size() - 1));
+		constr.fill = GridBagConstraints.HORIZONTAL;
+		constr.gridx = 0;
+		constr.gridy = 0;
+		this.surface.add(this.btnOptions.get(this.btnOptions.size() - 1), constr);
+		
 		//title label
-		top.add(new JLabel(name));
+		JLabel title = new JLabel(name);
+		constr.fill = GridBagConstraints.HORIZONTAL;
+		constr.gridx = 1;
+		constr.gridy = 0;
+		this.surface.add(title, constr);
 		
-		//maker
-		ScoreBasedQuiz newQuiz = new ScoreBasedQuiz();
-		newQuiz.setName(name);
+		//create the quiz object
+		if (this.quizzes.size() > 0) {
+			if (!this.quizzes.get(this.quizzes.size() - 1).getName().equals(name)) {
+				ScoreBasedQuiz newQuiz = new ScoreBasedQuiz();
+				this.quizzes.add(newQuiz);
+				this.quizzes.get(this.quizzes.size() - 1).setName(name);
+			}
+		} else {
+			ScoreBasedQuiz newQuiz = new ScoreBasedQuiz();
+			this.quizzes.add(newQuiz);
+			this.quizzes.get(this.quizzes.size() - 1).setName(name);
+		}
+
+
+		//add the scroll pane
 		
-		content.add(top);
-		content.add(newQuiz.getMakerPanel());
-		JScrollPane pane = new JScrollPane(content);
-		pane.setBorder(null);
-		this.surface.add(pane);
-		
-		repaint();
+
+		constr.fill = GridBagConstraints.BOTH;
+		constr.weightx = 1.0;
+		constr.weighty = 20.0;
+		constr.gridx = 0;
+		constr.gridy = 1;
+		constr.gridwidth = 60;
+		constr.gridheight = 60;
+		this.surface.add(this.quizzes.get(this.quizzes.size() - 1).getMakerPanel(), constr);
+		this.setPreferredSize(new Dimension(800,600));
+		this.pack();
 	}
 	
 	//for now, checking button presses based on their text to use less memory with the arrayList	
@@ -253,5 +248,14 @@ public class Window extends JFrame implements ActionListener {
 		if (eventButton.getText().equals("Score Based Quiz")) {
 			this.nameScore();
 		}
+		//this.surface.revalidate();
 	}//end actionPerformed
+	
+	//so i can revalidate when the JScrollPane is scrolled
+	public void adjustmentValueChanged(AdjustmentEvent e) {
+		System.out.println("Adjustement value changed");
+		this.repaint();
+		this.revalidate();
+		
+	}
 }

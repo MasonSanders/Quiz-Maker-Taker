@@ -1,5 +1,6 @@
 //Quiz.java
 import java.awt.*;
+import javax.swing.*;
 //Quizzes will be linked lists of questions
 public interface Quiz {
 	public void setName(String name);
