@@ -9,5 +9,5 @@ public interface Quiz {
 	public void addQuestion(String type);
 	public void removeQuestion(int index);
 	public void createMakerPanel();
-	public Panel getMakerPanel();
+	public JPanel getMakerPanel();
 }

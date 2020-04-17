@@ -13,7 +13,7 @@ public class ScoreBasedQuiz implements Quiz, ActionListener, Serializable {
 	
 	//maker components
 	//ArrayList<Panel> qPanels = new ArrayList<Panel>();
-	Panel quizPanel = new Panel();
+	JPanel quizPanel = new JPanel();
 	JButton addSnglAnsBtn = new JButton("Add Single Answer Question");
 	JButton addMltiAnsBtn = new JButton("Add Multi Answer Question");
 	
@@ -55,74 +55,85 @@ public class ScoreBasedQuiz implements Quiz, ActionListener, Serializable {
 		//try to clean the pane before it needs updated
 		this.quizPanel.removeAll();
 		this.quizPanel.revalidate();
+		this.quizPanel.setPreferredSize(new Dimension(800, 600));
 		this.quizPanel.setLayout(new GridBagLayout());
 		GridBagConstraints constr = new GridBagConstraints();
 		
-		Panel panePnl = new Panel();
-		panePnl.setLayout(new BoxLayout(panePnl, BoxLayout.Y_AXIS));
-		
+		JPanel contentPnl = new JPanel();
+		//contentPnl.setMaximumSize(new Dimension(800, Integer.MAX_VALUE));
+		contentPnl.setLayout(new GridBagLayout());
 		for(int i = 0; i < this.questions.size(); i++) {
-			Panel nestPanel = new Panel();
-			nestPanel.setLayout(new GridBagLayout());
 			
 			JLabel qNumLbl = new JLabel(Integer.toString(i + 1));
 			constr.fill = GridBagConstraints.HORIZONTAL;
 			constr.weightx = 0.0;
+			constr.weighty = 0.0;
 			constr.gridx = 0;
-			constr.gridy = 0;
+			constr.gridy = i;
 			constr.gridwidth = 1;
 			constr.gridheight = 1;
-			nestPanel.add(qNumLbl, constr);
+			constr.anchor = GridBagConstraints.FIRST_LINE_START;
+			constr.insets = new Insets(0, 0, 0, 0);
+			contentPnl.add(qNumLbl, constr);
 			
 			JButton removeBtn = new JButton("-");
 			constr.fill = GridBagConstraints.HORIZONTAL;
 			constr.weightx = 0.0;
 			constr.gridx = 1;
-			constr.gridy = 0;
+			constr.gridy = i;
 			constr.insets = new Insets(0, 5, 0, 5);
 			constr.gridwidth = 1;
 			constr.gridheight = 1;
-			nestPanel.add(removeBtn, constr);
+			constr.anchor = GridBagConstraints.FIRST_LINE_START;
+			contentPnl.add(removeBtn, constr);
 			
-			Panel questionPnl = this.questions.get(i).getMakerPanel();
-			constr.fill = GridBagConstraints.HORIZONTAL;
+			JPanel questionPnl = this.questions.get(i).getMakerPanel();
+			constr.fill = GridBagConstraints.BOTH;
 			constr.weightx = 1.0;
+			constr.weighty = 0.0;
 			constr.gridx = 2;
-			constr.gridy = 0;
-			constr.gridwidth = 4;
-			constr.gridheight = 2;
-			nestPanel.add(questionPnl, constr);
-			
-			panePnl.add(nestPanel);
+			constr.gridy = i;
+			constr.gridwidth = 10;
+			constr.gridheight = 1;
+			constr.anchor = GridBagConstraints.CENTER;
+			constr.insets = new Insets(0, 0, 10, 0);
+			contentPnl.add(questionPnl, constr);
 		}
-		Panel bottom = new Panel();
-		bottom.setLayout(new GridBagLayout());
 		
+		//singleanswerq button
 		constr.fill = GridBagConstraints.HORIZONTAL;
 		constr.weightx = 0.0;
+		constr.weighty = 1.0;
 		constr.gridx = 0;
-		constr.gridy = 0;
-		constr.gridwidth = 1;
-		bottom.add(this.addSnglAnsBtn, constr);
+		constr.gridy = this.questions.size();
+		constr.gridwidth = 3;
+		constr.insets = new Insets(0, 10, 0, 10);
+		contentPnl.add(this.addSnglAnsBtn, constr);
 		
+		//multianswerq button
 		constr.fill = GridBagConstraints.HORIZONTAL;
 		constr.weightx = 0.0;
-		constr.gridx = 1;
-		constr.gridy = 0;
-		constr.gridwidth = 1;
-		bottom.add(this.addMltiAnsBtn, constr);
+		constr.weighty = 1.0;
+		constr.gridx = 3;
+		constr.gridy = this.questions.size();
+		constr.gridwidth = 3;
+		contentPnl.add(this.addMltiAnsBtn, constr);
 		
-		panePnl.add(bottom);
-		
-		JScrollPane pane = new JScrollPane(panePnl);
+		//scrollpane
+		JScrollPane pane = new JScrollPane(contentPnl);
+		pane.setPreferredSize(this.quizPanel.getPreferredSize());
+		pane.setBorder(null);
 		
 		constr.fill = GridBagConstraints.BOTH;
+		constr.weightx = 1.0;
+		constr.weighty = 1.0;
 		constr.gridx = 0;
 		constr.gridy = 0;
+		constr.anchor = GridBagConstraints.FIRST_LINE_START;
 		this.quizPanel.add(pane);
 	}
 	
-	public Panel getMakerPanel() {
+	public JPanel getMakerPanel() {
 		return this.quizPanel;
 	}
 	

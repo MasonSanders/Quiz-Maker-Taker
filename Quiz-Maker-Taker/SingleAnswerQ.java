@@ -11,11 +11,12 @@ public class SingleAnswerQ implements Question, ActionListener, Serializable {
 	ArrayList<String> answers = new ArrayList<String>();
 	
 	//maker components
-	Panel qPanel = new Panel();
+	JPanel qPanel = new JPanel();
 	JButton addAnswerBtn = new JButton("Add Answer");
-	JTextField qField = new JTextField();
+	JTextField qField = new JTextField("Question");
 	ArrayList<JRadioButton> correctAnsRdo = new ArrayList<JRadioButton>();
 	ArrayList<JTextField> answerFields = new ArrayList<JTextField>();
+	ButtonGroup rdoGroup = new ButtonGroup();
 	
 	
 	//constructor
@@ -63,42 +64,50 @@ public class SingleAnswerQ implements Question, ActionListener, Serializable {
 		GridBagConstraints constr = new GridBagConstraints();
 		
 		constr.fill = GridBagConstraints.HORIZONTAL;
+		constr.weightx = 1.0;
 		constr.gridx = 0;
 		constr.gridy = 0;
 		constr.gridwidth = 7;
+		constr.anchor = GridBagConstraints.FIRST_LINE_START;
 		this.qPanel.add(this.qField, constr);
 		
 		//make the fields for each added question. shouldn't loop initially.
 		for (int i = 0; i < this.answerFields.size(); i++) {
 			constr.fill = GridBagConstraints.HORIZONTAL;
+			constr.weightx = 0.0;
 			constr.gridx = 0;
 			constr.gridy = i + 1;
 			constr.gridwidth = 1;
 			JButton removeBtn = new JButton("-");
 			removeBtn.addActionListener(this);
+			constr.insets = new Insets(0, 0, 10, 10);
 			this.qPanel.add(removeBtn, constr);
 			
 			constr.fill = GridBagConstraints.HORIZONTAL;
-			constr.weightx = 1.0;
+			constr.weightx = 0.0;
 			constr.gridx = 1;
 			constr.gridy = i + 1;
-			constr.gridwidth = 7;
+			constr.gridwidth = 6;
+			constr.insets = new Insets(0, 0, 0, 0);
 			qPanel.add(this.answerFields.get(i), constr);
 			
 			constr.fill = GridBagConstraints.HORIZONTAL;
-			constr.gridx = 8;
+			constr.weightx = 0.0;
+			constr.gridx = 7;
 			constr.gridy = i + 1;
 			constr.gridwidth = 1;
 			this.qPanel.add(this.correctAnsRdo.get(i), constr);
 			
 			constr.fill = GridBagConstraints.HORIZONTAL;
 			constr.weightx = 0.0;
-			constr.gridx = 9;
+			constr.gridx = 8;
 			constr.gridy = i + 1;
 			constr.gridwidth = 1;
+			constr.insets = new Insets(0, 0, 0, 10);
 			this.qPanel.add(new JLabel("Correct Answer"), constr);
 		}
 		constr.fill = GridBagConstraints.HORIZONTAL;
+		constr.weightx = 0;
 		constr.gridx = 0;
 		constr.gridy = this.answerFields.size() + 1;
 		constr.gridwidth = 1;
@@ -107,7 +116,7 @@ public class SingleAnswerQ implements Question, ActionListener, Serializable {
 		
 	}
 	
-	public Panel getMakerPanel() {
+	public JPanel getMakerPanel() {
 		return this.qPanel;
 	}
 	
@@ -127,8 +136,9 @@ public class SingleAnswerQ implements Question, ActionListener, Serializable {
 	//addNewAnswerFields method
 	//adds the components for a new answer and then 
 	public void addNewAnswerFields() {
-		this.answerFields.add(new JTextField());
+		this.answerFields.add(new JTextField("Answer"));
 		this.correctAnsRdo.add(new JRadioButton());
+		this.rdoGroup.add(this.correctAnsRdo.get(this.correctAnsRdo.size() - 1));
 	}
 	
 	//actionPerformed method

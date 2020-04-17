@@ -6,7 +6,7 @@ import java.awt.event.*;
 import java.util.*;
 import java.io.*;
 
-public class Window extends JFrame implements ActionListener, AdjustmentListener {
+public class Window extends JFrame implements ActionListener {
 	Screens previousScreen = Screens.MAIN_MENU;
 	//ArrayLists of different types of components
 	Container surface;
@@ -73,6 +73,7 @@ public class Window extends JFrame implements ActionListener, AdjustmentListener
 		this.pack();
 	}//end mainMenu
 	
+	//makerTypeSelection method
 	public void makerTypeSelection() {
 		//set the previous screen for the back button.
 		this.previousScreen = Screens.MAIN_MENU;
@@ -112,15 +113,18 @@ public class Window extends JFrame implements ActionListener, AdjustmentListener
 		
 		//pack the surface
 		this.pack();
-	}
+	}//end makerTypeSelection
 	
+	//nameScore method
 	public void nameScore() {
 		//set previous screen for the back button
 		this.previousScreen = Screens.MAKER_TYPE_SELECTION;
 		this.btnOptions.removeAll(this.btnOptions);
 		this.textFields.removeAll(this.textFields);
-		
+	
 		this.surface.removeAll();
+		this.surface.repaint();
+		this.surface.revalidate();
 		this.surface.setLayout(new GridLayout(2, 1));
 		Panel top = new Panel();
 		top.setLayout(new FlowLayout());
@@ -146,66 +150,97 @@ public class Window extends JFrame implements ActionListener, AdjustmentListener
 		this.surface.add(bottom);
 		this.pack();
 		
-	}
+	}//end nameScore
 	
+	//makerScore method
 	public void makerScore(String name) {
 		//Setup
+		//remove all and revalidate.
 		this.previousScreen = Screens.NAME_SCORE;
 		this.btnOptions.removeAll(this.btnOptions);
 		this.textFields.removeAll(this.textFields);
 		this.surface.removeAll();
 		this.surface.repaint();
-		this.surface.validate();
+		this.surface.revalidate();
 		
+		//set the gridbaglayout and define the constriants
 		this.surface.setLayout(new GridBagLayout());
 		GridBagConstraints constr = new GridBagConstraints();
+		
 		
 		//back button
 		this.btnOptions.add(new JButton("Back"));
 		this.btnOptions.get(this.btnOptions.size() - 1).addActionListener(this);
 		constr.fill = GridBagConstraints.HORIZONTAL;
+		constr.weightx = 0.0;
 		constr.gridx = 0;
 		constr.gridy = 0;
+		constr.insets = new Insets(10, 10, 10, 10);
 		this.surface.add(this.btnOptions.get(this.btnOptions.size() - 1), constr);
 		
 		//title label
 		JLabel title = new JLabel(name);
 		constr.fill = GridBagConstraints.HORIZONTAL;
+		constr.weightx =0.2;
 		constr.gridx = 1;
 		constr.gridy = 0;
+		constr.insets = new Insets(0, 0, 0, 0);
 		this.surface.add(title, constr);
 		
 		//create the quiz object
-		if (this.quizzes.size() > 0) {
-			if (!this.quizzes.get(this.quizzes.size() - 1).getName().equals(name)) {
-				ScoreBasedQuiz newQuiz = new ScoreBasedQuiz();
-				this.quizzes.add(newQuiz);
-				this.quizzes.get(this.quizzes.size() - 1).setName(name);
-			}
-		} else {
-			ScoreBasedQuiz newQuiz = new ScoreBasedQuiz();
-			this.quizzes.add(newQuiz);
-			this.quizzes.get(this.quizzes.size() - 1).setName(name);
-		}
-
-
-		//add the scroll pane
+		ScoreBasedQuiz newQuiz = new ScoreBasedQuiz();
+		this.quizzes.add(newQuiz);
+		this.quizzes.get(this.quizzes.size() - 1).setName(name);
 		
 
 		constr.fill = GridBagConstraints.BOTH;
 		constr.weightx = 1.0;
-		constr.weighty = 20.0;
+		constr.weighty = 1.0;
 		constr.gridx = 0;
 		constr.gridy = 1;
 		constr.gridwidth = 60;
 		constr.gridheight = 60;
+		constr.anchor = GridBagConstraints.FIRST_LINE_START;
 		this.surface.add(this.quizzes.get(this.quizzes.size() - 1).getMakerPanel(), constr);
-		this.setPreferredSize(new Dimension(800,600));
+		
+		
+		constr.fill = GridBagConstraints.HORIZONTAL;
+		constr.weightx = 0.0;
+		constr.gridx = 0;
+		constr.gridy = 62;
+		constr.gridwidth = 1;
+		constr.gridheight = 1;
+		constr.insets = new Insets(10, 10, 10 ,10);
+		constr.anchor = GridBagConstraints.CENTER;
+		JButton finishBtn = new JButton("Save and Finish");
+		finishBtn.addActionListener(this);
+		this.surface.add(finishBtn, constr);
 		this.pack();
 	}
 	
-	//for now, checking button presses based on their text to use less memory with the arrayList	
-	//actionPerformed
+	//saveQuizzes method
+	public void saveQuizzes() {
+		try {
+			FileOutputStream outFile = new FileOutputStream("Quizzes.dat");
+			ObjectOutputStream outObj = new ObjectOutputStream(outFile);
+			outObj.writeObject(this.quizzes);
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+	}//end saveQuizzes
+	
+	@SuppressWarnings("unchecked")
+	public void loadQuizzes() {
+		try {
+			FileInputStream inFile = new FileInputStream("Quizzes.dat");
+			ObjectInputStream inObj = new ObjectInputStream(inFile);
+			this.quizzes = (ArrayList<Quiz>)inObj.readObject();
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+	}
+		
+	//actionPerformed method
 	public void actionPerformed(ActionEvent e) {
 		//convert the event source to a button instead of an object
 		JButton eventButton = null;
@@ -220,6 +255,7 @@ public class Window extends JFrame implements ActionListener, AdjustmentListener
 			} else if (this.previousScreen == Screens.MAKER_TYPE_SELECTION) {
 				this.makerTypeSelection();
 			} else if (this.previousScreen == Screens.NAME_SCORE) {
+				this.quizzes.remove(this.quizzes.get(this.quizzes.size() - 1));
 				this.nameScore();
 			} else {
 				System.out.println("no previous screen.");
@@ -234,7 +270,6 @@ public class Window extends JFrame implements ActionListener, AdjustmentListener
 				}
 			}
 		}
-		
 		//select make a quiz
 		if (eventButton.getText().equals("Make a Quiz")) {
 			//go to the makerTypeSelection screen
@@ -248,14 +283,10 @@ public class Window extends JFrame implements ActionListener, AdjustmentListener
 		if (eventButton.getText().equals("Score Based Quiz")) {
 			this.nameScore();
 		}
-		//this.surface.revalidate();
+		//select Save and Finish
+		if (eventButton.getText().equals("Save and Finish")) {
+			this.saveQuizzes();
+			this.mainMenu();
+		}
 	}//end actionPerformed
-	
-	//so i can revalidate when the JScrollPane is scrolled
-	public void adjustmentValueChanged(AdjustmentEvent e) {
-		System.out.println("Adjustement value changed");
-		this.repaint();
-		this.revalidate();
-		
-	}
 }
