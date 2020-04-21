@@ -16,6 +16,8 @@ public class SingleAnswerQ implements Question, ActionListener, Serializable {
 	JTextField qField = new JTextField("Question");
 	ArrayList<JRadioButton> correctAnsRdo = new ArrayList<JRadioButton>();
 	ArrayList<JTextField> answerFields = new ArrayList<JTextField>();
+	ArrayList<JLabel> answerLbls = new ArrayList<JLabel>();
+	ArrayList<JButton> removeBtns = new ArrayList<JButton>();
 	ButtonGroup rdoGroup = new ButtonGroup();
 	
 	
@@ -57,6 +59,15 @@ public class SingleAnswerQ implements Question, ActionListener, Serializable {
 		return this.correctAns;
 	}
 	
+	public String getSelectedAnswer() {
+		for(int i = 0; i < this.answers.size(); i++) {
+			if (correctAnsRdo.get(i).isSelected()) {
+				return this.answers.get(i);
+			}
+		}
+		return "";
+	}
+	
 	//createMakerPanel method, creates the panel that shows for the question in the maker
 	public void createMakerPanel() {
 		this.qPanel.removeAll();
@@ -78,10 +89,8 @@ public class SingleAnswerQ implements Question, ActionListener, Serializable {
 			constr.gridx = 0;
 			constr.gridy = i + 1;
 			constr.gridwidth = 1;
-			JButton removeBtn = new JButton("-");
-			removeBtn.addActionListener(this);
 			constr.insets = new Insets(0, 0, 10, 10);
-			this.qPanel.add(removeBtn, constr);
+			this.qPanel.add(this.removeBtns.get(i), constr);
 			
 			constr.fill = GridBagConstraints.HORIZONTAL;
 			constr.weightx = 0.0;
@@ -113,17 +122,53 @@ public class SingleAnswerQ implements Question, ActionListener, Serializable {
 		constr.gridwidth = 1;
 		this.qPanel.add(this.addAnswerBtn, constr);
 		
-		
-	}
+	}//end createMakerPanel
 	
-	public JPanel getMakerPanel() {
+	//getPanel method
+	public JPanel getPanel() {
 		return this.qPanel;
+	}//end getMakerPanel
+	
+	
+	public void createTakerPanel() {
+		this.qPanel.removeAll();
+		this.answerLbls.removeAll(this.answerLbls);
+		this.qPanel.setLayout(new GridBagLayout());
+		GridBagConstraints constr = new GridBagConstraints();
+		
+		//question label
+		constr.fill = GridBagConstraints.HORIZONTAL;
+		constr.weightx = 1.0;
+		constr.gridx = 0;
+		constr.gridy = 0;
+		constr.gridwidth = 7;
+		constr.anchor = GridBagConstraints.FIRST_LINE_START;
+		this.qPanel.add(new JLabel(this.getQuestion()), constr);
+		
+		for (int i = 0; i < this.answers.size(); i++) {
+			//radio button
+			constr.fill = GridBagConstraints.HORIZONTAL;
+			constr.weightx = 0.0;
+			constr.gridx = 0;
+			constr.gridy = i + 1;
+			constr.gridwidth = 1;
+			this.qPanel.add(this.correctAnsRdo.get(i), constr);
+			
+			//answer label
+			constr.fill = GridBagConstraints.HORIZONTAL;
+			constr.weightx = 1.0;
+			constr.gridx = 1;
+			constr.gridy = i+1;
+			this.answerLbls.add(new JLabel(this.answers.get(i)));
+			this.qPanel.add(this.answerLbls.get(i), constr);
+		}
 	}
 	
 	//update method
-	//stores all of the strings to not component variables
+	//stores all of the strings to non-component variables
 	public void update() {
 		this.answers.removeAll(this.answers);
+		this.setCorrectAnswer("");
 		for (int i = 0; i < this.answerFields.size(); i++) {
 			this.addAnswer(this.answerFields.get(i).getText());
 			if (this.correctAnsRdo.get(i).isSelected()) {
@@ -131,7 +176,7 @@ public class SingleAnswerQ implements Question, ActionListener, Serializable {
 			}
 		}
 		this.qstn = this.qField.getText();
-	}
+	}//end update
 	
 	//addNewAnswerFields method
 	//adds the components for a new answer and then 
@@ -139,7 +184,17 @@ public class SingleAnswerQ implements Question, ActionListener, Serializable {
 		this.answerFields.add(new JTextField("Answer"));
 		this.correctAnsRdo.add(new JRadioButton());
 		this.rdoGroup.add(this.correctAnsRdo.get(this.correctAnsRdo.size() - 1));
-	}
+		this.removeBtns.add(new JButton("-"));
+		this.removeBtns.get(this.removeBtns.size() - 1).addActionListener(this);
+	}//end addNewAnswerFields
+	
+	//removeAnswer method
+	public void removeAnswerFields(int index) {
+		this.answerFields.remove(index);
+		this.rdoGroup.remove(this.correctAnsRdo.get(index));
+		this.correctAnsRdo.remove(index);
+		this.removeBtns.remove(index);
+	}//end removeAnswer
 	
 	//actionPerformed method
 	public void actionPerformed(ActionEvent e) {
@@ -154,9 +209,16 @@ public class SingleAnswerQ implements Question, ActionListener, Serializable {
 			this.createMakerPanel();
 			this.qPanel.revalidate();
 		}
-		if (eventButton.getText().equals("-")) {
-			System.out.println("remove Answer btn");
-		}
+		
+		//special case for the remove buttons
+		for (int i = 0; i < this.removeBtns.size(); i++) {
+			if (eventButton == this.removeBtns.get(i)) {
+				this.removeAnswerFields(i);
+				this.update();
+				this.createMakerPanel();
+				this.qPanel.revalidate();
+			}
+		} 
 	}
 	
 }

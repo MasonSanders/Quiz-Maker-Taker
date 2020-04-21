@@ -12,10 +12,10 @@ public class ScoreBasedQuiz implements Quiz, ActionListener, Serializable {
 	String name;
 	
 	//maker components
-	//ArrayList<Panel> qPanels = new ArrayList<Panel>();
 	JPanel quizPanel = new JPanel();
 	JButton addSnglAnsBtn = new JButton("Add Single Answer Question");
 	JButton addMltiAnsBtn = new JButton("Add Multi Answer Question");
+	ArrayList<JButton> removeBtns = new ArrayList<JButton>();
 	
 	//constructor
 	public ScoreBasedQuiz() {
@@ -23,7 +23,7 @@ public class ScoreBasedQuiz implements Quiz, ActionListener, Serializable {
 		this.addMltiAnsBtn.addActionListener(this);
 		this.addSnglAnsBtn.addActionListener(this);
 		this.createMakerPanel();
-	}
+	}//end constructor
 	
 	//setName method
 	public void setName(String name) {
@@ -40,6 +40,8 @@ public class ScoreBasedQuiz implements Quiz, ActionListener, Serializable {
 	public void addQuestion(String type) {
 		if (type.equals("Single Answer")) {
 			this.questions.add(new SingleAnswerQ());
+			this.removeBtns.add(new JButton("-"));
+			this.removeBtns.get(this.removeBtns.size() - 1).addActionListener(this);
 		} else {
 			System.out.println("Add multiAnswerQ");
 		}
@@ -48,11 +50,12 @@ public class ScoreBasedQuiz implements Quiz, ActionListener, Serializable {
 	//removeQuestion method
 	public void removeQuestion(int index) {
 		this.questions.remove(index);
+		this.removeBtns.remove(index);
 	}//end removeQuestion
 	
 	//createMakerPanel method
 	public void createMakerPanel() {
-		//try to clean the pane before it needs updated
+		//clean the panel before recreating it;
 		this.quizPanel.removeAll();
 		this.quizPanel.revalidate();
 		this.quizPanel.setPreferredSize(new Dimension(800, 600));
@@ -60,7 +63,6 @@ public class ScoreBasedQuiz implements Quiz, ActionListener, Serializable {
 		GridBagConstraints constr = new GridBagConstraints();
 		
 		JPanel contentPnl = new JPanel();
-		//contentPnl.setMaximumSize(new Dimension(800, Integer.MAX_VALUE));
 		contentPnl.setLayout(new GridBagLayout());
 		for(int i = 0; i < this.questions.size(); i++) {
 			
@@ -76,7 +78,6 @@ public class ScoreBasedQuiz implements Quiz, ActionListener, Serializable {
 			constr.insets = new Insets(0, 0, 0, 0);
 			contentPnl.add(qNumLbl, constr);
 			
-			JButton removeBtn = new JButton("-");
 			constr.fill = GridBagConstraints.HORIZONTAL;
 			constr.weightx = 0.0;
 			constr.gridx = 1;
@@ -85,9 +86,9 @@ public class ScoreBasedQuiz implements Quiz, ActionListener, Serializable {
 			constr.gridwidth = 1;
 			constr.gridheight = 1;
 			constr.anchor = GridBagConstraints.FIRST_LINE_START;
-			contentPnl.add(removeBtn, constr);
+			contentPnl.add(this.removeBtns.get(i), constr);
 			
-			JPanel questionPnl = this.questions.get(i).getMakerPanel();
+			JPanel questionPnl = this.questions.get(i).getPanel();
 			constr.fill = GridBagConstraints.BOTH;
 			constr.weightx = 1.0;
 			constr.weighty = 0.0;
@@ -122,7 +123,7 @@ public class ScoreBasedQuiz implements Quiz, ActionListener, Serializable {
 		//scrollpane
 		JScrollPane pane = new JScrollPane(contentPnl);
 		pane.setPreferredSize(this.quizPanel.getPreferredSize());
-		pane.setBorder(null);
+		pane.setBorder(BorderFactory.createEmptyBorder());
 		
 		constr.fill = GridBagConstraints.BOTH;
 		constr.weightx = 1.0;
@@ -130,12 +131,118 @@ public class ScoreBasedQuiz implements Quiz, ActionListener, Serializable {
 		constr.gridx = 0;
 		constr.gridy = 0;
 		constr.anchor = GridBagConstraints.FIRST_LINE_START;
-		this.quizPanel.add(pane);
+		this.quizPanel.add(pane, constr);
+	}//end createMakerPanel
+	
+	//createTakerPanel method
+	public void createTakerPanel() {
+		//have to create the taker panel for each question before getting started
+		for (int i = 0; i < this.questions.size(); i++) {
+			this.questions.get(i).createTakerPanel();
+		}
+		
+		this.quizPanel.removeAll();
+		this.quizPanel.repaint();
+		this.quizPanel.revalidate();
+		this.quizPanel.setPreferredSize(new Dimension(800, 600));
+		this.quizPanel.setLayout(new GridBagLayout());
+		GridBagConstraints constr = new GridBagConstraints();
+		
+		JPanel contentPnl = new JPanel();
+		contentPnl.setLayout(new GridBagLayout());
+		for (int i = 0; i < this.questions.size(); i++) {
+			//number label
+			JLabel qNumLbl = new JLabel(Integer.toString(i + 1) + ".");
+			constr.fill = GridBagConstraints.HORIZONTAL;
+			constr.weightx = 0.0;
+			constr.gridx = 0;
+			constr.gridy = i;
+			constr.gridwidth = 1;
+			constr.gridheight = 1;
+			constr.anchor = GridBagConstraints.FIRST_LINE_START;
+			constr.insets = new Insets(0, 10, 10, 10);
+			contentPnl.add(qNumLbl, constr);
+			
+			//question panel
+			JPanel questionPnl = this.questions.get(i).getPanel();
+			constr.fill = GridBagConstraints.BOTH;
+			constr.weightx = 1.0;
+			constr.weighty = 0.0;
+			constr.gridx = 2;
+			constr.gridy = i;
+			constr.gridwidth = 10;
+			constr.gridheight = 1;
+			constr.anchor = GridBagConstraints.FIRST_LINE_START;
+			constr.insets = new Insets(0, 0, 10, 0);
+			contentPnl.add(questionPnl, constr);
+		}
+		
+		//scrollpane
+		JScrollPane pane = new JScrollPane(contentPnl);
+		pane.setPreferredSize(this.quizPanel.getPreferredSize());
+		pane.setBorder(BorderFactory.createEmptyBorder());
+		
+		
+		constr.fill = GridBagConstraints.BOTH;
+		constr.weightx = 1.0;
+		constr.weighty = 1.0;
+		constr.gridx = 0;
+		constr.gridy = 0;
+		constr.anchor = GridBagConstraints.FIRST_LINE_START;
+		constr.insets = new Insets(0, 0, 0, 0);
+		this.quizPanel.add(pane, constr);
+		
+	}//end createTakerPanel
+	
+	//getPanel method
+	public JPanel getPanel() {
+		return this.quizPanel;
+	}//end getPanel
+	
+	public void updateQuestions() {
+		for (int i = 0; i < this.questions.size(); i++) {
+			this.questions.get(i).update();
+		}
 	}
 	
-	public JPanel getMakerPanel() {
-		return this.quizPanel;
+	public boolean isValid() {
+		boolean valid = false;
+		if (this.questions.size() > 0) {
+			for (int i = 0; i < this.questions.size(); i++) {
+				this.questions.get(i).update();
+			}
+			
+			for (int i = 0; i < this.questions.size(); i++) {
+				if (this.questions.get(i).getAnswerList().size() > 0) {
+					if(!this.questions.get(i).getCorrectAnswer().equals("")) {
+						valid = true;
+					} else {
+						valid = false;
+					}
+				} else {
+					valid = false;
+				}
+			}
+		} else {
+			valid = false;
+		}
+		
+		return valid;
 	}
+	
+	//getResult method
+	public String getResult() {
+		int correctCtr = 0;
+		String score = "";
+		for (int i = 0; i < this.questions.size(); i++) {
+			if (this.questions.get(i).getSelectedAnswer().equals(this.questions.get(i).getCorrectAnswer())) {
+				correctCtr += 1;
+			}
+		}
+		score = Integer.toString(correctCtr) + "/" + this.questions.size();
+		return score;
+		
+	}//end getResult
 	
 	public void actionPerformed(ActionEvent e) {
 		JButton eventButton = null;
@@ -144,9 +251,6 @@ public class ScoreBasedQuiz implements Quiz, ActionListener, Serializable {
 			eventButton = (JButton)e.getSource();
 		}
 		
-		if (eventButton.getText().equals("-")) {
-			System.out.println("removeAnswerButton");
-		}
 		if (eventButton.getText().equals("Add Multi Answer Question")) {
 			this.addQuestion("Multi Answer");
 		}
@@ -154,6 +258,15 @@ public class ScoreBasedQuiz implements Quiz, ActionListener, Serializable {
 			this.addQuestion("Single Answer");
 			this.createMakerPanel();
 			this.quizPanel.revalidate();
+		}
+		
+		//specific case for the remove buttons
+		for (int i = 0; i < this.removeBtns.size(); i++) {
+			if (eventButton == this.removeBtns.get(i)) {
+				this.removeQuestion(i);
+				this.createMakerPanel();
+				this.quizPanel.revalidate();
+			}
 		}
 	}
 }
