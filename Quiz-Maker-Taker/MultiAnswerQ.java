@@ -1,11 +1,11 @@
-//SingleAnswerQ.java
+//MultiAnswerQ.java
 import java.awt.*;
 import javax.swing.*;
 import java.awt.event.*;
 import java.util.*;
 import java.io.*;
 
-public class SingleAnswerQ implements Question, ActionListener, Serializable {
+public class MultiAnswerQ implements Question, ActionListener, Serializable {
 	
 	String qstn;
 	ArrayList<String> correctAns = new ArrayList<String>();
@@ -16,16 +16,15 @@ public class SingleAnswerQ implements Question, ActionListener, Serializable {
 	JButton addAnswerBtn = new JButton("Add Answer");
 	JTextField qField = new JTextField("Question");
 	
-	ArrayList<JRadioButton> correctAnsRdo = new ArrayList<JRadioButton>();
+	ArrayList<JCheckBox> correctAnsChk = new ArrayList<JCheckBox>();
 	
 	ArrayList<JTextField> answerFields = new ArrayList<JTextField>();
 	ArrayList<JLabel> answerLbls = new ArrayList<JLabel>();
 	ArrayList<JButton> removeBtns = new ArrayList<JButton>();
-	ButtonGroup rdoGroup = new ButtonGroup();
 	
 	
 	//constructor
-	public SingleAnswerQ() {
+	public MultiAnswerQ() {
 		this.qstn = "";
 		this.addAnswerBtn.addActionListener(this);
 		this.createMakerPanel();
@@ -65,7 +64,7 @@ public class SingleAnswerQ implements Question, ActionListener, Serializable {
 	public ArrayList<String> getSelectedAnswer() {
 		ArrayList<String> selectedList = new ArrayList<String>();
 		for(int i = 0; i < this.answers.size(); i++) {
-			if (correctAnsRdo.get(i).isSelected()) {
+			if (correctAnsChk.get(i).isSelected()) {
 				selectedList.add(this.answers.get(i));
 			}
 		}
@@ -109,7 +108,7 @@ public class SingleAnswerQ implements Question, ActionListener, Serializable {
 			constr.gridx = 7;
 			constr.gridy = i + 1;
 			constr.gridwidth = 1;
-			this.qPanel.add(this.correctAnsRdo.get(i), constr);
+			this.qPanel.add(this.correctAnsChk.get(i), constr);
 			
 			constr.fill = GridBagConstraints.HORIZONTAL;
 			constr.weightx = 0.0;
@@ -133,7 +132,9 @@ public class SingleAnswerQ implements Question, ActionListener, Serializable {
 		this.qPanel.removeAll();
 		this.answerLbls.removeAll(this.answerLbls);
 		
-		this.rdoGroup.clearSelection();
+		for (int i = 0; i < this.correctAnsChk.size(); i++) {
+			this.correctAnsChk.get(i).setSelected(false);
+		}
 		this.qPanel.setLayout(new GridBagLayout());
 		GridBagConstraints constr = new GridBagConstraints();
 		
@@ -153,7 +154,7 @@ public class SingleAnswerQ implements Question, ActionListener, Serializable {
 			constr.gridx = 0;
 			constr.gridy = i + 1;
 			constr.gridwidth = 1;
-			this.qPanel.add(this.correctAnsRdo.get(i), constr);
+			this.qPanel.add(this.correctAnsChk.get(i), constr);
 			
 			//answer label
 			constr.fill = GridBagConstraints.HORIZONTAL;
@@ -191,7 +192,7 @@ public class SingleAnswerQ implements Question, ActionListener, Serializable {
 		this.correctAns.removeAll(this.correctAns);
 		for (int i = 0; i < this.answerFields.size(); i++) {
 			this.addAnswer(this.answerFields.get(i).getText());
-			if (this.correctAnsRdo.get(i).isSelected()) {
+			if (this.correctAnsChk.get(i).isSelected()) {
 				this.addCorrectAnswer(this.answerFields.get(i).getText());
 			}
 		}
@@ -201,8 +202,7 @@ public class SingleAnswerQ implements Question, ActionListener, Serializable {
 	//addNewAnswerFields method
 	public void addNewAnswerFields() {
 		this.answerFields.add(new JTextField("Answer"));
-		this.correctAnsRdo.add(new JRadioButton());
-		this.rdoGroup.add(this.correctAnsRdo.get(this.correctAnsRdo.size() - 1));
+		this.correctAnsChk.add(new JCheckBox());
 		this.removeBtns.add(new JButton("-"));
 		this.removeBtns.get(this.removeBtns.size() - 1).addActionListener(this);
 	}//end addNewAnswerFields
@@ -210,8 +210,7 @@ public class SingleAnswerQ implements Question, ActionListener, Serializable {
 	//removeAnswer method
 	public void removeAnswerFields(int index) {
 		this.answerFields.remove(index);
-		this.rdoGroup.remove(this.correctAnsRdo.get(index));
-		this.correctAnsRdo.remove(index);
+		this.correctAnsChk.remove(index);
 		this.removeBtns.remove(index);
 	}//end removeAnswer
 	

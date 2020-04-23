@@ -43,7 +43,9 @@ public class ScoreBasedQuiz implements Quiz, ActionListener, Serializable {
 			this.removeBtns.add(new JButton("-"));
 			this.removeBtns.get(this.removeBtns.size() - 1).addActionListener(this);
 		} else {
-			System.out.println("Add multiAnswerQ");
+			this.questions.add(new MultiAnswerQ());
+			this.removeBtns.add(new JButton("-"));
+			this.removeBtns.get(this.removeBtns.size() - 1).addActionListener(this);
 		}
 	}//end addQuestion
 	
@@ -101,7 +103,7 @@ public class ScoreBasedQuiz implements Quiz, ActionListener, Serializable {
 			contentPnl.add(questionPnl, constr);
 		}
 		
-		//singleanswerq button
+		//single answer question button
 		constr.fill = GridBagConstraints.HORIZONTAL;
 		constr.weightx = 0.0;
 		constr.weighty = 1.0;
@@ -111,7 +113,7 @@ public class ScoreBasedQuiz implements Quiz, ActionListener, Serializable {
 		constr.insets = new Insets(0, 10, 0, 10);
 		contentPnl.add(this.addSnglAnsBtn, constr);
 		
-		//multianswerq button
+		//multi answer question button
 		constr.fill = GridBagConstraints.HORIZONTAL;
 		constr.weightx = 0.0;
 		constr.weighty = 1.0;
@@ -206,27 +208,17 @@ public class ScoreBasedQuiz implements Quiz, ActionListener, Serializable {
 	}
 	
 	public boolean isValid() {
-		boolean valid = false;
+		boolean valid = true;
 		if (this.questions.size() > 0) {
 			for (int i = 0; i < this.questions.size(); i++) {
 				this.questions.get(i).update();
-			}
-			
-			for (int i = 0; i < this.questions.size(); i++) {
-				if (this.questions.get(i).getAnswerList().size() > 0) {
-					if(!this.questions.get(i).getCorrectAnswer().equals("")) {
-						valid = true;
-					} else {
-						valid = false;
-					}
-				} else {
+				if (!this.questions.get(i).isValid()) {
 					valid = false;
 				}
 			}
 		} else {
 			valid = false;
 		}
-		
 		return valid;
 	}
 	
@@ -234,8 +226,19 @@ public class ScoreBasedQuiz implements Quiz, ActionListener, Serializable {
 	public String getResult() {
 		int correctCtr = 0;
 		String score = "";
+		boolean allMatch = true;
+		ArrayList<String> selectedAnswers;
+		ArrayList<String> correctAnswers;
 		for (int i = 0; i < this.questions.size(); i++) {
-			if (this.questions.get(i).getSelectedAnswer().equals(this.questions.get(i).getCorrectAnswer())) {
+			allMatch = true;
+			selectedAnswers = this.questions.get(i).getSelectedAnswer();
+			correctAnswers = this.questions.get(i).getCorrectAnswer();
+			for (int j = 0; j < selectedAnswers.size(); j++) {
+				if (correctAnswers.indexOf(selectedAnswers.get(j)) == -1) {
+					allMatch = false;
+				}
+			}
+			if (allMatch) {
 				correctCtr += 1;
 			}
 		}
@@ -253,11 +256,13 @@ public class ScoreBasedQuiz implements Quiz, ActionListener, Serializable {
 		
 		if (eventButton.getText().equals("Add Multi Answer Question")) {
 			this.addQuestion("Multi Answer");
+			this.createMakerPanel();
+			//this.quizPanel.revalidate(); 
 		}
 		if (eventButton.getText().equals("Add Single Answer Question")) {
 			this.addQuestion("Single Answer");
 			this.createMakerPanel();
-			this.quizPanel.revalidate();
+			//this.quizPanel.revalidate();
 		}
 		
 		//specific case for the remove buttons

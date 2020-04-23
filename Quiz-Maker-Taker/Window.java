@@ -33,6 +33,7 @@ public class Window extends JFrame implements ActionListener {
 		this.surface = this.getContentPane();
 		this.pack();
 		this.setVisible(true);
+		this.setLocationRelativeTo(null);
 		this.loadQuizzes();
 		
 		this.qName = "";
@@ -41,7 +42,7 @@ public class Window extends JFrame implements ActionListener {
 	
 	//mainMenu method
 	public void mainMenu() {
-		//set the current screen
+		//set the previous screen, main menu's previous screen is main menu
 		this.previousScreen = Screens.MAIN_MENU;
 		//do this on each screen to minimize space taken up by the btnOptions arrayList
 		this.btnOptions.removeAll(this.btnOptions);
@@ -49,13 +50,13 @@ public class Window extends JFrame implements ActionListener {
 		this.surface.removeAll();
 		this.surface.setLayout(new GridLayout(2, 1));
 		//top panel for the main menu
-		Panel top = new Panel();
+		JPanel top = new JPanel();
 		top.setLayout(new FlowLayout());
 		//add label
 		top.add(new JLabel("Quiz-Maker-Taker"));
 		
 		//bottom panel for the main menu
-		Panel bottom = new Panel();
+		JPanel bottom = new JPanel();
 		bottom.setLayout(new FlowLayout());
 		
 		//make a quiz button
@@ -84,11 +85,11 @@ public class Window extends JFrame implements ActionListener {
 		
 		this.surface.removeAll();
 		this.surface.setLayout(new GridLayout(3, 1));
-		Panel top = new Panel();
+		JPanel top = new JPanel();
 		top.setLayout(new FlowLayout());
 		top.add(new JLabel("Select the type of quiz you want to make."));
 		
-		Panel middle = new Panel();
+		JPanel middle = new JPanel();
 		middle.setLayout(new FlowLayout());
 		
 		//Score based quiz button
@@ -101,7 +102,7 @@ public class Window extends JFrame implements ActionListener {
 		this.btnOptions.get(this.btnOptions.size() - 1).addActionListener(this);
 		middle.add(this.btnOptions.get(this.btnOptions.size() - 1));
 		
-		Panel bottom = new Panel();
+		JPanel bottom = new JPanel();
 		bottom.setLayout(new FlowLayout());
 		
 		//back button
@@ -133,14 +134,14 @@ public class Window extends JFrame implements ActionListener {
 		//add the new quiz to the quizzes ArrayList
 		this.quizzes.add(newQuiz);
 		
-		Panel top = new Panel();
+		JPanel top = new JPanel();
 		top.setLayout(new FlowLayout());
 		top.add(new JLabel("Name your quiz:"));
 		//textField for entering the name of the quiz
 		this.textFields.add(new JTextField(20));
 		top.add(this.textFields.get(this.textFields.size() - 1));
 		
-		Panel bottom = new Panel();
+		JPanel bottom = new JPanel();
 		bottom.setLayout(new FlowLayout());
 		
 		//back button
@@ -231,6 +232,7 @@ public class Window extends JFrame implements ActionListener {
 		this.surface.setLayout(new GridBagLayout());
 		GridBagConstraints constr = new GridBagConstraints();
 		
+		//back button
 		JButton backBtn = new JButton("Back");
 		backBtn.addActionListener(this);
 		constr.fill = GridBagConstraints.HORIZONTAL;
@@ -239,12 +241,14 @@ public class Window extends JFrame implements ActionListener {
 		constr.insets = new Insets(10, 10, 10, 10);
 		this.surface.add(backBtn, constr);
 		
+		//select quiz lbl
 		JLabel selectLbl = new JLabel("Select the Quiz you want to take.");
 		constr.fill = GridBagConstraints.HORIZONTAL;
 		constr.gridx = 1;
 		constr.gridy = 0;
 		this.surface.add(selectLbl, constr);
 		
+		//panePnl goes inside the scrollpane
 		JPanel panePnl = new JPanel();
 		panePnl.setLayout(new FlowLayout());
 		panePnl.setPreferredSize(new Dimension(800, 600));
@@ -254,6 +258,7 @@ public class Window extends JFrame implements ActionListener {
 			panePnl.add(quizBtn); 
 		}
 		
+		//scrollpane
 		JScrollPane pane = new JScrollPane(panePnl);
 		pane.setBorder(BorderFactory.createEmptyBorder());
 		constr.fill = GridBagConstraints.BOTH;
@@ -268,7 +273,9 @@ public class Window extends JFrame implements ActionListener {
 		this.pack();
 	}//end takerSelection
 	
+	//results method
 	public void results(String rslt) {
+		//clear the screen
 		this.previousScreen = Screens.TAKER;
 		this.surface.removeAll();
 		this.surface.repaint();
@@ -284,12 +291,14 @@ public class Window extends JFrame implements ActionListener {
 		JLabel rsltLbl = new JLabel("Your Result: " + rslt);
 		this.surface.add(rsltLbl, constr);
 		
+		//name prompt label
 		constr.fill = GridBagConstraints.HORIZONTAL;
 		constr.gridx = 0;
 		constr.gridy = 1;
 		JLabel enterNameLbl = new JLabel("Enter your name below and hit 'Save and Finish'");
 		this.surface.add(enterNameLbl, constr);
 		
+		//name text field
 		constr.fill = GridBagConstraints.HORIZONTAL;
 		constr.weightx = 1.0;
 		constr.gridx = 0;
@@ -297,6 +306,7 @@ public class Window extends JFrame implements ActionListener {
 		this.textFields.add(new JTextField());
 		this.surface.add(this.textFields.get(this.textFields.size() - 1), constr);
 		
+		//save and finish button
 		constr.fill = GridBagConstraints.HORIZONTAL;
 		constr.gridx = 0;
 		constr.gridy = 3;
@@ -305,7 +315,7 @@ public class Window extends JFrame implements ActionListener {
 		this.surface.add(finishBtn, constr);
 		
 		this.pack();
-	}
+	}//end results
 	
 	//saveQuizzes method
 	public void saveQuizzes() {
@@ -318,6 +328,7 @@ public class Window extends JFrame implements ActionListener {
 		}
 	}//end saveQuizzes
 	
+	//loadQuizzes method
 	@SuppressWarnings("unchecked")
 	public void loadQuizzes() {
 		try {
@@ -327,7 +338,25 @@ public class Window extends JFrame implements ActionListener {
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 		}
-	}
+	}//end loadQuizzes
+	
+	//saveScore method
+	public void saveScore(String name, String score) {
+		try {
+			FileWriter outFile = new FileWriter("Scores.txt", true);
+			PrintWriter output = new PrintWriter(outFile);
+			
+			output.println("Name: " + name);
+			output.println("Quiz: " + this.qName);
+			output.println("Score: " + score);
+			output.println("---------------------------");
+			outFile.close();
+			output.close();
+			
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+	}//end saveScore
 		
 	//actionPerformed method
 	public void actionPerformed(ActionEvent e) {
@@ -377,6 +406,7 @@ public class Window extends JFrame implements ActionListener {
 		if (eventButton.getText().equals("Score Based Quiz")) {
 			this.nameQuiz(new ScoreBasedQuiz());
 		}
+		//select finite results quiz
 		if (eventButton.getText().equals("Finite Results Quiz")) {
 			this.nameQuiz(new ScoreBasedQuiz());
 		}
@@ -389,13 +419,24 @@ public class Window extends JFrame implements ActionListener {
 					this.saveQuizzes();
 					this.mainMenu();
 				}
-			} else {
-				System.out.println(qName);
+			} else if (this.previousScreen == Screens.TAKER_SELECTION) {
 				for (int i = 0; i < this.quizzes.size(); i++) {
 					if (this.quizzes.get(i).getName().equals(this.qName)) {
-						System.out.println("yep");
 						this.results(this.quizzes.get(i).getResult());
+						break;
 					}
+				}
+			} else {
+				if (!this.textFields.get(this.textFields.size() - 1).getText().equals("")) {
+					for (int i = 0; i < this.quizzes.size(); i++) {
+						if (this.quizzes.get(i).getName().equals(this.qName)) {
+							String name = this.textFields.get(this.textFields.size() - 1).getText();
+							String rslt = this.quizzes.get(i).getResult();
+							this.saveScore(name, rslt);
+							break;
+						}
+					}
+					this.mainMenu();
 				}
 			}
 		}

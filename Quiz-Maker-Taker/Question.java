@@ -7,12 +7,13 @@ public interface Question {
 	public String getQuestion();
 	public void addAnswer(String ans);
 	public ArrayList<String> getAnswerList();
-	public String getCorrectAnswer();
-	public String getSelectedAnswer();
+	public ArrayList<String> getCorrectAnswer();
+	public ArrayList<String> getSelectedAnswer();
 	public void createMakerPanel();
 	public JPanel getPanel();
 	public void createTakerPanel();
 	public void addNewAnswerFields();
 	public void removeAnswerFields(int index);
+	public boolean isValid();
 	public void update();
 }
