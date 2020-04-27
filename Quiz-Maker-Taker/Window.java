@@ -7,11 +7,10 @@ import java.util.*;
 import java.io.*;
 
 public class Window extends JFrame implements ActionListener {
-	Screens previousScreen = Screens.MAIN_MENU;
+	Screens currentScreen = Screens.MAIN_MENU;
 	String qName;
 	//ArrayLists of different types of components
 	Container surface;
-	ArrayList<JButton> btnOptions = new ArrayList<JButton>();
 	//the list of textFields
 	ArrayList<JTextField> textFields = new ArrayList <JTextField>();
 	//the arrayList of quizzes
@@ -42,11 +41,8 @@ public class Window extends JFrame implements ActionListener {
 	
 	//mainMenu method
 	public void mainMenu() {
-		//set the previous screen, main menu's previous screen is main menu
-		this.previousScreen = Screens.MAIN_MENU;
-		//do this on each screen to minimize space taken up by the btnOptions arrayList
-		this.btnOptions.removeAll(this.btnOptions);
-		
+		//set the current screen
+		this.currentScreen = Screens.MAIN_MENU;
 		this.surface.removeAll();
 		this.surface.setLayout(new GridLayout(2, 1));
 		//top panel for the main menu
@@ -60,14 +56,14 @@ public class Window extends JFrame implements ActionListener {
 		bottom.setLayout(new FlowLayout());
 		
 		//make a quiz button
-		this.btnOptions.add(new JButton("Make a Quiz"));
-		this.btnOptions.get(this.btnOptions.size() - 1).addActionListener(this);
-		bottom.add(this.btnOptions.get(this.btnOptions.size() - 1));
+		JButton makeBtn = new JButton("Make a Quiz");
+		makeBtn.addActionListener(this);
+		bottom.add(makeBtn);
 		
 		//take a quiz button
-		this.btnOptions.add(new JButton("Take a Quiz"));
-		this.btnOptions.get(this.btnOptions.size() - 1).addActionListener(this);
-		bottom.add(this.btnOptions.get(this.btnOptions.size() - 1));
+		JButton takeBtn = new JButton("Take a Quiz");
+		takeBtn.addActionListener(this);
+		bottom.add(takeBtn);
 		
 		
 		//add the panels to the surface
@@ -76,54 +72,12 @@ public class Window extends JFrame implements ActionListener {
 		//pack the surface
 		this.pack();
 	}//end mainMenu
-	
-	//makerTypeSelection method
-	public void makerTypeSelection() {
-		//set the previous screen for the back button.
-		this.previousScreen = Screens.MAIN_MENU;
-		this.btnOptions.removeAll(this.btnOptions);
 		
-		this.surface.removeAll();
-		this.surface.setLayout(new GridLayout(3, 1));
-		JPanel top = new JPanel();
-		top.setLayout(new FlowLayout());
-		top.add(new JLabel("Select the type of quiz you want to make."));
-		
-		JPanel middle = new JPanel();
-		middle.setLayout(new FlowLayout());
-		
-		//Score based quiz button
-		this.btnOptions.add(new JButton("Score Based Quiz"));
-		this.btnOptions.get(this.btnOptions.size() - 1).addActionListener(this);
-		middle.add(this.btnOptions.get(this.btnOptions.size() - 1));
-		
-		//Finite results quiz button
-		this.btnOptions.add(new JButton("Finite Results Quiz"));
-		this.btnOptions.get(this.btnOptions.size() - 1).addActionListener(this);
-		middle.add(this.btnOptions.get(this.btnOptions.size() - 1));
-		
-		JPanel bottom = new JPanel();
-		bottom.setLayout(new FlowLayout());
-		
-		//back button
-		this.btnOptions.add(new JButton("Back"));
-		this.btnOptions.get(this.btnOptions.size() - 1).addActionListener(this);
-		bottom.add(this.btnOptions.get(this.btnOptions.size() - 1));
-		
-		//add panels to surface
-		this.surface.add(top);
-		this.surface.add(middle);
-		this.surface.add(bottom);
-		
-		//pack the surface
-		this.pack();
-	}//end makerTypeSelection
-	
 	//nameQuiz method
-	public <T extends Quiz> void nameQuiz(T newQuiz) {
+	public void nameQuiz(Quiz newQuiz) {
 		//set previous screen for the back button
-		this.previousScreen = Screens.MAKER_TYPE_SELECTION;
-		this.btnOptions.removeAll(this.btnOptions);
+		this.currentScreen = Screens.NAME_QUIZ;
+		
 		this.textFields.removeAll(this.textFields);
 	
 		this.surface.removeAll();
@@ -145,14 +99,14 @@ public class Window extends JFrame implements ActionListener {
 		bottom.setLayout(new FlowLayout());
 		
 		//back button
-		this.btnOptions.add(new JButton("Back"));
-		this.btnOptions.get(this.btnOptions.size() - 1).addActionListener(this);
-		bottom.add(this.btnOptions.get(this.btnOptions.size() - 1));
+		JButton backBtn = new JButton("Back");
+		backBtn.addActionListener(this);
+		bottom.add(backBtn);
 		
 		//Submit button
-		this.btnOptions.add(new JButton("Submit"));
-		this.btnOptions.get(this.btnOptions.size() - 1).addActionListener(this);
-		bottom.add(this.btnOptions.get(this.btnOptions.size() - 1));
+		JButton submitBtn = new JButton("Submit");
+		submitBtn.addActionListener(this);
+		bottom.add(submitBtn);
 		
 		this.surface.add(top);
 		this.surface.add(bottom);
@@ -164,8 +118,7 @@ public class Window extends JFrame implements ActionListener {
 	public void quizUI(Screens scrn, int index) {
 		//Setup
 		//remove all and revalidate.
-		this.previousScreen = scrn;
-		this.btnOptions.removeAll(this.btnOptions);
+		this.currentScreen = scrn;
 		this.textFields.removeAll(this.textFields);
 		this.surface.removeAll();
 		this.surface.repaint();
@@ -176,14 +129,14 @@ public class Window extends JFrame implements ActionListener {
 		GridBagConstraints constr = new GridBagConstraints();
 		
 		//back button
-		this.btnOptions.add(new JButton("Back"));
-		this.btnOptions.get(this.btnOptions.size() - 1).addActionListener(this);
+		JButton backBtn = new JButton("Back");
+		backBtn.addActionListener(this);
 		constr.fill = GridBagConstraints.HORIZONTAL;
 		constr.weightx = 0.0;
 		constr.gridx = 0;
 		constr.gridy = 0;
 		constr.insets = new Insets(10, 10, 10, 10);
-		this.surface.add(this.btnOptions.get(this.btnOptions.size() - 1), constr);
+		this.surface.add(backBtn, constr);
 		
 		//title label
 		JLabel title = new JLabel(this.quizzes.get(this.quizzes.size() - 1).getName());
@@ -206,6 +159,8 @@ public class Window extends JFrame implements ActionListener {
 		this.surface.add(this.quizzes.get(index).getPanel(), constr);
 		
 		//finish button
+		JButton finishBtn = new JButton("Save and Finish");
+		finishBtn.addActionListener(this);
 		constr.fill = GridBagConstraints.HORIZONTAL;
 		constr.weightx = 0.0;
 		constr.gridx = 0;
@@ -214,16 +169,13 @@ public class Window extends JFrame implements ActionListener {
 		constr.gridheight = 1;
 		constr.insets = new Insets(10, 10, 10 ,10);
 		constr.anchor = GridBagConstraints.CENTER;
-		JButton finishBtn = new JButton("Save and Finish");
-		finishBtn.addActionListener(this);
 		this.surface.add(finishBtn, constr);
 		this.pack();
 	}//end quizUI
 	
 	//takerSelection method
 	public void takerSelection() {
-		this.previousScreen = Screens.MAIN_MENU;
-		this.btnOptions.removeAll(this.btnOptions);
+		this.currentScreen = Screens.TAKER_SELECTION;
 		this.textFields.removeAll(this.textFields);
 		this.surface.removeAll();
 		this.surface.repaint();
@@ -276,7 +228,7 @@ public class Window extends JFrame implements ActionListener {
 	//results method
 	public void results(String rslt) {
 		//clear the screen
-		this.previousScreen = Screens.TAKER;
+		this.currentScreen = Screens.RESULTS;
 		this.surface.removeAll();
 		this.surface.repaint();
 		this.surface.revalidate();
@@ -368,58 +320,52 @@ public class Window extends JFrame implements ActionListener {
 		
 		if (eventButton.getText().equals("Back")) {
 			//determine where the back button takes the user.
-			if (this.previousScreen == Screens.MAIN_MENU) {
+			if (this.currentScreen == Screens.NAME_QUIZ) {
+				this.quizzes.remove(this.quizzes.get(this.quizzes.size() - 1));
 				this.mainMenu();
-			} else if (this.previousScreen == Screens.MAKER_TYPE_SELECTION) {
+			} else if (this.currentScreen == Screens.MAKER) {
 				this.quizzes.remove(this.quizzes.get(this.quizzes.size() - 1));
-				this.makerTypeSelection();
-			} else if (this.previousScreen == Screens.NAME_QUIZ) {
-				this.quizzes.remove(this.quizzes.get(this.quizzes.size() - 1));
-				this.makerTypeSelection();
-			} else if (this.previousScreen == Screens.TAKER_SELECTION) {
-				this.takerSelection();
-				
+				this.mainMenu();
+			} else if (this.currentScreen == Screens.TAKER_SELECTION) {
+				this.mainMenu();
+			} else if (this.currentScreen == Screens.TAKER) {
+				this.takerSelection();	
 			} else {
 				System.out.println("no previous screen.");
 			}
 		}
 		//select submit
 		if (eventButton.getText().equals("Submit")) {
-			//determine what the sumbit button does based on previous screen
-			if (this.previousScreen == Screens.MAKER_TYPE_SELECTION) {
-				if (!this.textFields.get(0).getText().equals("")) {
-					this.quizzes.get(this.quizzes.size() - 1).setName(this.textFields.get(0).getText());
-					this.quizUI(Screens.NAME_QUIZ, this.quizzes.size() - 1);
-				} 
+			if (!this.textFields.get(0).getText().equals("")) {
+				this.quizzes.get(this.quizzes.size() - 1).setName(this.textFields.get(0).getText());
+				this.quizUI(Screens.MAKER, this.quizzes.size() - 1);
+			} else {
+				JOptionPane.showMessageDialog(this, "Your quiz must have a name.");
 			}
 		}
 		//select make a quiz
 		if (eventButton.getText().equals("Make a Quiz")) {
 			//go to the makerTypeSelection screen
-			this.makerTypeSelection();
+			this.nameQuiz(new ScoreBasedQuiz());
 		}
 		//select take a quiz
 		if (eventButton.getText().equals("Take a Quiz")) {
 			this.takerSelection();
 		}
-		//select score based quiz
-		if (eventButton.getText().equals("Score Based Quiz")) {
-			this.nameQuiz(new ScoreBasedQuiz());
-		}
-		//select finite results quiz
-		if (eventButton.getText().equals("Finite Results Quiz")) {
-			this.nameQuiz(new ScoreBasedQuiz());
-		}
 		//select Save and Finish
 		if (eventButton.getText().equals("Save and Finish")) {
-			if (this.previousScreen == Screens.NAME_QUIZ) {
+			if (this.currentScreen == Screens.MAKER) {
 				if (this.quizzes.get(this.quizzes.size() - 1).isValid()) {
 					this.quizzes.get(this.quizzes.size() - 1).updateQuestions();
 					this.quizzes.get(this.quizzes.size() - 1).createTakerPanel();
 					this.saveQuizzes();
 					this.mainMenu();
+				} else {
+					JOptionPane.showMessageDialog(this, 
+						"Make sure all of your questions and answers are filled out properly");
+					
 				}
-			} else if (this.previousScreen == Screens.TAKER_SELECTION) {
+			} else if (this.currentScreen == Screens.TAKER) {
 				for (int i = 0; i < this.quizzes.size(); i++) {
 					if (this.quizzes.get(i).getName().equals(this.qName)) {
 						this.results(this.quizzes.get(i).getResult());
@@ -437,6 +383,8 @@ public class Window extends JFrame implements ActionListener {
 						}
 					}
 					this.mainMenu();
+				} else {
+					JOptionPane.showMessageDialog(this, "You must enter your name to submit");
 				}
 			}
 		}
@@ -444,7 +392,8 @@ public class Window extends JFrame implements ActionListener {
 		for (int i = 0; i < this.quizzes.size(); i++) {
 			if (eventButton.getText().equals(this.quizzes.get(i).getName())) {
 				this.qName = this.quizzes.get(i).getName();
-				this.quizUI(Screens.TAKER_SELECTION, i);
+				this.quizzes.get(i).createTakerPanel();
+				this.quizUI(Screens.TAKER, i);
 				break;
 			}
 		}

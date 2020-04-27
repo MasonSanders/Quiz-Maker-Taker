@@ -230,11 +230,13 @@ public class ScoreBasedQuiz implements Quiz, ActionListener, Serializable {
 		ArrayList<String> selectedAnswers;
 		ArrayList<String> correctAnswers;
 		for (int i = 0; i < this.questions.size(); i++) {
-			allMatch = true;
+			allMatch = false;
 			selectedAnswers = this.questions.get(i).getSelectedAnswer();
 			correctAnswers = this.questions.get(i).getCorrectAnswer();
-			for (int j = 0; j < selectedAnswers.size(); j++) {
-				if (correctAnswers.indexOf(selectedAnswers.get(j)) == -1) {
+			for (int j = 0; j < correctAnswers.size(); j++) {
+				if (selectedAnswers.indexOf(correctAnswers.get(j)) != -1) {
+					allMatch = true;
+				} else {
 					allMatch = false;
 				}
 			}

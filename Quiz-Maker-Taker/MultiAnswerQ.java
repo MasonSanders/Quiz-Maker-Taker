@@ -182,6 +182,16 @@ public class MultiAnswerQ implements Question, ActionListener, Serializable {
 		if (this.answers.size() == 0) {
 			valid = false;
 		}
+		for (int i = 0; i < this.answers.size(); i++) {
+			if (this.answers.get(i).equals("Answer")) {
+				valid = false;
+				break;
+			}
+			if (this.answers.get(i).equals("")) {
+				valid = false;
+				break;
+			}
+		}
 		return valid;
 	}
 	

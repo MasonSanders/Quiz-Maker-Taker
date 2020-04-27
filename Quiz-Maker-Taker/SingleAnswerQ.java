@@ -175,11 +175,24 @@ public class SingleAnswerQ implements Question, ActionListener, Serializable {
 		if (this.qstn.equals("")) {
 			valid = false;
 		}
+		if (this.qstn.equals("Question")) {
+			valid = false;
+		}
 		if (this.correctAns.size() == 0) {
 			valid = false;
 		}
 		if (this.answers.size() == 0) {
 			valid = false;
+		}
+		for (int i = 0; i < this.answers.size(); i++) {
+			if (this.answers.get(i).equals("Answer")) {
+				valid = false;
+				break;
+			}
+			if (this.answers.get(i).equals("")) {
+				valid = false;
+				break;
+			}
 		}
 		return valid;
 	}
