@@ -6,6 +6,7 @@ public interface Question {
 	public void setQuestion(String q);
 	public String getQuestion();
 	public void addAnswer(String ans);
+	public void addCorrectAnswer(String ans);
 	public ArrayList<String> getAnswerList();
 	public ArrayList<String> getCorrectAnswer();
 	public ArrayList<String> getSelectedAnswer();

@@ -8,7 +8,7 @@ import java.io.*;
 
 
 public class ScoreBasedQuiz implements Quiz, ActionListener, Serializable {
-	ArrayList<Question> questions = new ArrayList<Question>();
+	LinkedList<Question> questions = new LinkedList<Question>();
 	String name;
 	
 	//maker components

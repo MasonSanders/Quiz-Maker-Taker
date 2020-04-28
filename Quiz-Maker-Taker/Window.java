@@ -12,9 +12,9 @@ public class Window extends JFrame implements ActionListener {
 	//ArrayLists of different types of components
 	Container surface;
 	//the list of textFields
-	ArrayList<JTextField> textFields = new ArrayList <JTextField>();
+	ArrayList<JTextField> textFields = new ArrayList<JTextField>();
 	//the arrayList of quizzes
-	ArrayList<Quiz> quizzes = new ArrayList<Quiz>();
+	LinkedList<Quiz> quizzes = new LinkedList<Quiz>();
 	
 	
 	//main method
@@ -139,7 +139,7 @@ public class Window extends JFrame implements ActionListener {
 		this.surface.add(backBtn, constr);
 		
 		//title label
-		JLabel title = new JLabel(this.quizzes.get(this.quizzes.size() - 1).getName());
+		JLabel title = new JLabel(this.quizzes.get(index).getName());
 		constr.fill = GridBagConstraints.HORIZONTAL;
 		constr.weightx =0.2;
 		constr.gridx = 1;
@@ -286,7 +286,7 @@ public class Window extends JFrame implements ActionListener {
 		try {
 			FileInputStream inFile = new FileInputStream("Quizzes.dat");
 			ObjectInputStream inObj = new ObjectInputStream(inFile);
-			this.quizzes = (ArrayList<Quiz>)inObj.readObject();
+			this.quizzes = (LinkedList<Quiz>)inObj.readObject();
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 		}
@@ -331,7 +331,7 @@ public class Window extends JFrame implements ActionListener {
 			} else if (this.currentScreen == Screens.TAKER) {
 				this.takerSelection();	
 			} else {
-				System.out.println("no previous screen.");
+				System.out.println("no current screen");
 			}
 		}
 		//select submit
